@@ -1,0 +1,28 @@
+@startuml container_diagram
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+
+   !$COLOR_USER = "#1ab1e6 "
+   AddContainerTag("telecom", $bgColor="#8D917A", $fontColor="white", $legendText="Телеком оператор")
+   AddContainerTag("ext_call", $bgColor="#FFE4B5", $fontColor="black", $legendText="Телеком оператор")
+   UpdateElementStyle("external_person", $bgColor=$COLOR_USER)
+   Person_Ext(client, "Клиент")
+
+  
+   System(inet_bank, "Интернет-банк")
+   System(auth, "Система авторизации")
+   System(sms_system, "Смс-система")
+   System(telecom, "Телеком оператор", $tags="telecom")
+   System(ext_call, "Партнерский колл центр", $tags="ext_call")
+
+   
+    Rel(client, auth, "авторизация по счету или номеру телефона")
+    Rel(client, inet_bank, "звонит по номеру внутреннего кол центра")
+    Rel(client, ext_call, "звонит по номеру партнерского кол центра")
+    Rel(auth, inet_bank, "подача заявки по персональным условиям на открытие депозита")
+    Rel(inet_bank, ext_call, "Передает по почте информацию об актуальных ставках депозита")
+    Rel(inet_bank, sms_system, "отправка сообщения")
+    Rel(sms_system, telecom, "отправка сообщения")
+    Rel(telecom, client, "отправка сообщения")
+
+@enduml
