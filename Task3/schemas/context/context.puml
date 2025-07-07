@@ -1,0 +1,22 @@
+@startuml container_diagram
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+
+   !$COLOR_USER = "#1ab1e6 "
+   AddContainerTag("telecom", $bgColor="#8D917A", $fontColor="white", $legendText="Телеком оператор")
+   UpdateElementStyle("external_person", $bgColor=$COLOR_USER)
+   Person_Ext(client, "Клиент")
+
+  
+   System(inet_bank, "Интернет-банк")
+   System(auth, "Система авторизации")
+   System(sms_system, "Смс-система")
+   System(telecom, "Телеком оператор", $tags="telecom")
+   
+    Rel(client, auth, "авторизация по счету или номеру телефона")
+    Rel(auth, inet_bank, "подача заявки по персональным условиям на открытие депозита")
+    Rel(inet_bank, sms_system, "отправка сообщения")
+    Rel(sms_system, telecom, "отправка сообщения")
+    Rel(telecom, client, "отправка сообщения")
+
+@enduml

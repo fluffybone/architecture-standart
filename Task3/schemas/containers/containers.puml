@@ -1,0 +1,71 @@
+@startuml container_diagram
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+
+   !$COLOR_USER = "#1ab1e6 "
+    AddContainerTag("db", $sprite="database_server", $legendText="database container")
+   AddContainerTag("telecom", $bgColor="#8D917A", $fontColor="white", $legendText="Телеком оператор")
+    AddContainerTag("webApp", $sprite="application_server", $legendText="web app container")
+    
+   UpdateElementStyle("external_person", $bgColor=$COLOR_USER)
+   Person_Ext(client, "Клиент", "Может подать заявку на открытие депозита только в отделении")
+
+  
+
+
+
+   Container(auth, "Система авторизации")
+
+   Container(telecom, "Телеком оператор", $tags="telecom")
+   
+   
+   System_Boundary(site_bank, "Сайт" ) {
+    Container(site_bank_webb, "Сайт банка", $tags="webApp")
+    Container(site_encryption, "Система шифрования")
+   
+   }
+   
+
+    
+      System_Boundary(inet_bank, "Интернет-банк" ) {
+      Container(call, "Кол центр")
+      Container(auth, "Система авторизации")
+      Container(inet_bank_app, "Интернет-банк")
+      Container(deposit_open, "Открытие депозита")
+      Container(inet_bank__encryption, "Система шифрования")
+ 
+   }
+   
+    System(sms_system, "Смс-система")
+    System_Boundary(abc_system, "АБС" ) {
+    Container(abc, "АБС Система", "Десктопный клиент на Delphi")
+    ContainerDb(abc_db, "СУБД на Oracle", $tags="db")
+     
+    Container(deposit_rates, "АБС-ставки по депозитам, работа со ставками по заявке.","микросервис")
+    ContainerDb(deposit_db, "АБС-БД, ставки по депозитам", $tags="db")
+  
+  
+  
+  }
+  
+
+    Rel(client, site_bank, "просмотр маркетинговых предложений, может перейти поссылке на Интернет-банк")
+    Rel(site_bank_webb, site_encryption, "шифрование")
+    Rel(inet_bank_app, inet_bank__encryption, "шифрование")
+
+    Rel(abc, abc_db, "чтение/запись")
+    Rel(deposit_rates, deposit_db, "чтение/запись")
+    Rel(site_bank, auth, "авторизация при переходе на Интернет-банк")
+    Rel(auth, inet_bank_app, "при успешной авторизации переход в интернет-банк, может оставить заявку, на открытие депозита")
+    Rel_U( inet_bank_app,call, "обработка заявок")
+    Rel_U( call,abc_system, "синхронизация условий для клиента по депозиту")
+    Rel_U(call, deposit_open,  "открытие депозита")
+
+   
+    Rel(deposit_open, sms_system, "отправка сообщения")
+    Rel(sms_system, telecom, "отправка сообщения")
+  
+  
+   Rel(client, telecom, "получает сообщение о подтверждении открытия депозита")
+
+@enduml

@@ -1,0 +1,41 @@
+@startuml container_diagram
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+
+ !$COLOR_USER = "#1ab1e6 "
+  UpdateElementStyle("external_person", $bgColor=$COLOR_USER)
+  Person_Ext(client, "Клиент", "Может подать заявку на открытие депозита только в отделении")
+
+
+  System_Boundary(our_system, "Банк" ) {
+  
+   Person(user_call, "Сотрудник кол центра", "Рассказыввает клиенту о деталях открытия депозита,заводит обращение в своей системе")
+   Person(user_back, "Сотрудник бэк офиса", "Обрабатывают заявки из кол-центра в АБС, отвечает за деятельность компании на финансовых рынках и управление активами и пассивами банка")
+   Person(user_front, "Сотрудник фронт офиса", "Работает с клиентами в офисе,маркетинг и продажи")
+   Person(user_credit, "Сотрудник отдела кредитования", "Обрабатывают заявки из кол-центра в АБС")
+
+   System(call_center, "Кол Центр" ,$descr="Хранит обращения клиентов")
+   System(abc_system, "АБС система" )
+   System(sms_system, "СМС-шлюз телеком-оператора" ,$descr="Принимает данные из АБС отсылает клиенту смс")
+
+   System(site, "Сайт", "Показывает маркетинговую информацию")
+   System(inet_bank, "Интернет-банк",  "Проведение платежей и открытие текущих счетов (дебетовых карт).")
+
+  
+  }
+
+    Rel(client, user_call, "консультируется о деталях открытия депозита")
+    Rel(user_call, call_center, "принимает звонки, заводит обращение в")
+    Rel(call_center, abc_system, "обращения передаются в")
+    Rel(user_back, abc_system, "обрабатывает обращения клиентов")
+    Rel(user_back, user_credit, "запрос на специальные условия")
+    Rel(user_credit, abc_system, "текущий уровень кредитного риска для банка")
+    Rel(abc_system, sms_system, "отправляет СМС-оповещение клиенту")
+    Rel(abc_system, inet_bank, "интернет-банк интегрирован с АБС")
+    Rel(client, site, "просмотр маркетинговых предложений")
+    Rel(user_front, client, "работает с клиентом в офисе")
+
+
+
+
+@enduml
